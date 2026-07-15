@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>失智症家屬照顧壓力指數測試</title>
+<style>
+  :root{
+    --brand:#968a71;
+    --brand-dark:#6f6450;
+    --brand-light:#f5f1e8;
+    --ink:#3a352c;
+    --ink-soft:#7a7263;
+    --card:#ffffff;
+    --ok:#5a8a5e;
+    --warn:#c88a3d;
+    --danger:#b85c4a;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+    background:linear-gradient(160deg,#f5f1e8 0%,#ece5d5 100%);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;justify-content:center;
+    padding:24px 16px 48px;
+    line-height:1.7;
+  }
+  .app{width:100%;max-width:560px}
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 8px 30px rgba(111,100,80,.12);
+    padding:32px 26px;
+    animation:fade .35s ease;
+  }
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .hidden{display:none!important}
+
+  /* ---------- intro ---------- */
+  .badge{
+    display:inline-block;background:var(--brand-light);color:var(--brand-dark);
+    font-size:.78rem;letter-spacing:.05em;padding:4px 12px;border-radius:999px;margin-bottom:14px;
+  }
+  h1{font-size:1.5rem;line-height:1.45;margin-bottom:14px;color:var(--brand-dark)}
+  .intro p{margin-bottom:10px;color:var(--ink-soft);font-size:.95rem}
+  .intro .note{
+    background:var(--brand-light);border-radius:12px;padding:12px 16px;
+    font-size:.9rem;color:var(--brand-dark);margin:18px 0 24px;
+  }
+  .btn{
+    display:block;width:100%;border:none;cursor:pointer;
+    background:var(--brand);color:#fff;font-size:1.05rem;font-weight:700;
+    padding:15px;border-radius:999px;letter-spacing:.08em;
+    transition:background .2s, transform .1s;
+  }
+  .btn:hover{background:var(--brand-dark)}
+  .btn:active{transform:scale(.98)}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+
+  /* ---------- quiz ---------- */
+  .progress-wrap{margin-bottom:22px}
+  .progress-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft);margin-bottom:6px}
+  .progress-bar{height:8px;background:var(--brand-light);border-radius:999px;overflow:hidden}
+  .progress-fill{height:100%;width:0;background:var(--brand);border-radius:999px;transition:width .3s ease}
+  .stem{font-size:.88rem;color:var(--ink-soft);margin-bottom:6px}
+  .question{font-size:1.3rem;font-weight:700;margin-bottom:22px;min-height:3em}
+  .options{display:flex;flex-direction:column;gap:10px}
+  .opt{
+    display:flex;align-items:center;gap:12px;
+    border:1.5px solid #e3dccb;border-radius:12px;
+    padding:12px 16px;cursor:pointer;background:#fff;
+    font-size:1rem;transition:all .15s;width:100%;text-align:left;
+  }
+  .opt:hover{border-color:var(--brand);background:var(--brand-light)}
+  .opt.selected{border-color:var(--brand);background:var(--brand-light);font-weight:700}
+  .opt .score{
+    flex:none;width:28px;height:28px;border-radius:50%;
+    background:var(--brand-light);color:var(--brand-dark);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.85rem;font-weight:700;
+  }
+  .opt.selected .score{background:var(--brand);color:#fff}
+  .nav{display:flex;justify-content:space-between;margin-top:24px;align-items:center}
+  .back-link{
+    background:none;border:none;color:var(--ink-soft);cursor:pointer;
+    font-size:.9rem;padding:8px 4px;
+  }
+  .back-link:hover{color:var(--brand-dark)}
+
+  /* ---------- result ---------- */
+  .score-circle{
+    width:150px;height:150px;border-radius:50%;margin:6px auto 20px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#fff;
+  }
+  .score-circle .num{font-size:2.6rem;font-weight:800;line-height:1.1}
+  .score-circle .max{font-size:.8rem;opacity:.85}
+  .level-ok .score-circle{background:linear-gradient(145deg,#79a97d,var(--ok))}
+  .level-warn .score-circle{background:linear-gradient(145deg,#dba55c,var(--warn))}
+  .level-danger .score-circle{background:linear-gradient(145deg,#cf7a67,var(--danger))}
+  .level-tag{text-align:center;font-size:.85rem;letter-spacing:.15em;font-weight:700;margin-bottom:8px}
+  .level-ok .level-tag{color:var(--ok)}
+  .level-warn .level-tag{color:var(--warn)}
+  .level-danger .level-tag{color:var(--danger)}
+  .result-title{text-align:center;font-size:1.3rem;font-weight:800;margin-bottom:14px;color:var(--ink)}
+  .result-desc{
+    font-size:.95rem;color:var(--ink-soft);
+    background:var(--brand-light);border-radius:12px;padding:14px 18px;margin-bottom:26px;
+  }
+
+  /* ---------- lead form ---------- */
+  .lead-form h3{font-size:1.05rem;color:var(--brand-dark);margin-bottom:6px}
+  .lead-form .form-intro{font-size:.88rem;color:var(--ink-soft);margin-bottom:18px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:.9rem;font-weight:700;margin-bottom:6px}
+  .field label .req{color:var(--danger)}
+  .field input[type=text],.field input[type=tel],.field textarea{
+    width:100%;border:1.5px solid #e3dccb;border-radius:10px;
+    padding:11px 14px;font-size:1rem;font-family:inherit;background:#fff;
+    transition:border-color .15s;
+  }
+  .field textarea{min-height:90px;resize:vertical}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--brand)}
+  .radio-row{display:flex;flex-direction:column;gap:8px}
+  .radio-row label{
+    display:flex;align-items:center;gap:10px;font-weight:400;font-size:.95rem;
+    border:1.5px solid #e3dccb;border-radius:10px;padding:10px 14px;cursor:pointer;margin:0;
+  }
+  .radio-row label:has(input:checked){border-color:var(--brand);background:var(--brand-light)}
+  .radio-row input[type=radio]{accent-color:var(--brand)}
+  #otherText{margin-top:8px}
+  .form-error{color:var(--danger);font-size:.85rem;margin-bottom:12px;display:none}
+
+  /* ---------- thanks ---------- */
+  .thanks{text-align:center}
+  .thanks .icon{font-size:3rem;margin-bottom:12px}
+  .thanks h2{color:var(--brand-dark);margin-bottom:12px;font-size:1.3rem}
+  .thanks p{color:var(--ink-soft);font-size:.95rem;margin-bottom:20px}
+  .line-btn{
+    display:inline-block;text-decoration:none;background:#06C755;color:#fff;
+    font-weight:700;padding:14px 34px;border-radius:999px;font-size:1rem;
+  }
+  .line-btn:hover{filter:brightness(1.05)}
+  .footnote{text-align:center;font-size:.75rem;color:var(--ink-soft);margin-top:18px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ========== 第一頁：說明 ========== -->
+  <section id="pageIntro" class="card intro">
+    <span class="badge">來源：美國退休人員協會（AARP）照顧壓力檢測</span>
+    <h1>失智症家屬照顧壓力指數測試</h1>
+    <p>照顧阿茲海默症或失智症家人，你是不是也常常覺得快撐不住？</p>
+    <p>明明只是想好好照顧家人，卻開始變得疲憊、焦慮、沒耐心，甚至害怕自己在治療選擇上做錯決定。</p>
+    <p>這不是你不夠好，而是照顧壓力已經開始累積。</p>
+    <div class="note">共 15 題，約 3 分鐘。請依照你<strong>最近一段時間的真實狀態</strong>作答。</div>
+    <button class="btn" onclick="startQuiz()">開始測驗</button>
+  </section>
+
+  <!-- ========== 測驗頁 ========== -->
+  <section id="pageQuiz" class="card hidden">
+    <div class="progress-wrap">
+      <div class="progress-label"><span id="qCounter">第 1 / 15 題</span><span id="qPercent">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <p class="stem">在照顧親人時，您多頻繁會感到⋯</p>
+    <p class="question" id="qText"></p>
+    <div class="options" id="qOptions"></div>
+    <div class="nav">
+      <button class="back-link" id="btnBack" onclick="prevQuestion()">← 上一題</button>
+      <span></span>
+    </div>
+  </section>
+
+  <!-- ========== 結果頁 + CTA 表單 ========== -->
+  <section id="pageResult" class="card hidden">
+    <div class="score-circle"><div class="num" id="scoreNum">0</div><div class="max">/ 105 分</div></div>
+    <div class="level-tag" id="levelTag"></div>
+    <h2 class="result-title" id="resultTitle"></h2>
+    <p class="result-desc" id="resultDesc"></p>
+
+    <div class="lead-form">
+      <h3>取得專業支持</h3>
+      <p class="form-intro" id="formIntro"></p>
+
+      <div class="field">
+        <label>姓名 <span class="req">*</span></label>
+        <input type="text" id="fName" placeholder="請輸入您的姓名">
+      </div>
+      <div class="field">
+        <label>聯絡電話 <span class="req">*</span></label>
+        <input type="tel" id="fPhone" placeholder="請輸入您的聯絡電話">
+      </div>
+      <div class="field">
+        <label>方便聯繫時段 <span class="req">*</span></label>
+        <div class="radio-row">
+          <label><input type="radio" name="timeslot" value="上午 09:00 - 12:00">上午 09:00 - 12:00</label>
+          <label><input type="radio" name="timeslot" value="下午 14:00 - 17:00">下午 14:00 - 17:00</label>
+          <label><input type="radio" name="timeslot" value="以上時段皆方便聯繫">以上時段皆方便聯繫</label>
+          <label><input type="radio" name="timeslot" value="__other_option__">其他</label>
+        </div>
+        <input type="text" id="otherText" class="hidden" placeholder="請填寫方便聯繫的時段">
+      </div>
+      <div class="field">
+        <label>在照顧失智症家屬方面感興趣或想諮詢的問題 <span class="req">*</span></label>
+        <textarea id="fQuestion" placeholder="例如：想了解 TPS 腦部震波技術、照顧資源、如何安排評估⋯"></textarea>
+      </div>
+
+      <p class="form-error" id="formError">請完整填寫所有必填欄位。</p>
+      <button class="btn" id="btnSubmit" onclick="submitLead()">送出，安排專人與我聯繫</button>
+    </div>
+    <p class="footnote">您的資料僅用於安排諮詢服務，我們將妥善保管。</p>
+  </section>
+
+  <!-- ========== 第三頁：感謝 + LINE OA ========== -->
+  <section id="pageThanks" class="card thanks hidden">
+    <div class="icon">🌿</div>
+    <h2>感謝您的填寫</h2>
+    <p>我們已收到您的資料，將安排專人盡快與您聯繫。<br>您也可以先加入官方 LINE，取得失智症照顧資訊與最新 TPS 腦部震波技術諮詢通道。</p>
+    <a class="line-btn" id="lineLink" href="https://line.me/R/ti/p/@167acqxt" target="_blank" rel="noopener">加入 LINE 官方帳號</a>
+    <p class="footnote">別再一個人硬撐，讓我們陪你找到下一步。</p>
+  </section>
+
+  <!-- 隱藏 iframe：Google 表單送出目標，避免跳轉 -->
+  <iframe name="gform_target" id="gformTarget" style="display:none"></iframe>
+</div>
+
+<script>
+/* ============================================================
+   Google 表單串接設定
+   表單：深禾診所-TPS諮詢
+   https://docs.google.com/forms/d/1SyUCjG5lbZ99ECn4KxTPw4wK0aEh-3cjqcExWxq8GUI
+
+   ⚠️ 請將下方四個 entry ID 換成實際數值。
+   取得方式：開啟表單 →「⋮」→「取得預先填入的連結」→
+   隨意填寫後產生連結，連結中的 entry.XXXXXXX 即為各欄位 ID。
+   ============================================================ */
+const GOOGLE_FORM = {
+  action: "https://docs.google.com/forms/d/e/1FAIpQLScyG6d157nd2Fyx8YUAXKt80ZdfWzeN0WCvOWxuY1YRFBBwkA/formResponse",
+  entries: {
+    name:     "entry.575848333",   // 姓名
+    phone:    "entry.2113006937",  // 聯絡電話
+    timeslot: "entry.204917173",   // 方便聯繫時段（單選，含「其他」）
+    question: "entry.1527317472"   // 想諮詢的問題
+  }
+};
+
+/* ---------- 題目（AARP 照顧壓力檢測） ---------- */
+const QUESTIONS = [
+  "委屈或不滿",
+  "被照顧責任困住，沒有選擇",
+  "很勞累，睡眠不足",
+  "身心疲倦，很難恢復精神",
+  "煩惱或心裡不安",
+  "無助，不知道還能怎麼辦",
+  "胃口不佳，或暴飲暴食",
+  "身體非常疲勞",
+  "失望、心灰意冷",
+  "感覺自己沒有幫上忙，沒有價值",
+  "情緒被耗盡，已經麻木或沒有力氣反應",
+  "精疲力盡，已經快被壓力壓垮了",
+  "不快樂",
+  "緊張、擔心或焦慮",
+  "被忽略、排斥或不被理解"
+];
+
+const SCALE = [
+  {score:1,label:"從不"},
+  {score:2,label:"偶爾一兩次"},
+  {score:3,label:"很少"},
+  {score:4,label:"有時候"},
+  {score:5,label:"經常"},
+  {score:6,label:"通常如此"},
+  {score:7,label:"總是如此"}
+];
+
+/* ---------- 結果分級（15–105 分） ---------- */
+const LEVELS = [
+  {
+    min:15, max:59, cls:"level-ok", tag:"壓力尚可控",
+    title:"你的照顧壓力目前仍在可控範圍",
+    desc:"你目前的壓力狀態還算穩定，但照顧失智症家屬是一段長期歷程，越早建立正確觀念，越能減少日後的焦慮與錯誤選擇。",
+    formIntro:"請留下以下資料，我們將依照你感興趣或想諮詢的問題，提供適合的失智症照顧資訊與支持方向。"
+  },
+  {
+    min:60, max:89, cls:"level-warn", tag:"壓力正在累積",
+    title:"你的照顧壓力正在累積，需要開始找支援",
+    desc:"你的壓力已經開始影響情緒、體力或生活狀態。這不是你不夠努力，而是照顧失智症家屬本來就不該只靠一個人硬撐。",
+    formIntro:"請留下以下資料，讓我們先了解你目前在照顧失智症家屬時最想解決的問題，協助你找到更適合的支持與諮詢方向。"
+  },
+  {
+    min:90, max:105, cls:"level-danger", tag:"高壓耗竭警訊",
+    title:"你的照顧壓力已經接近超載，請不要再一個人扛",
+    desc:"你的測驗結果顯示，照顧壓力可能已經明顯影響你的身心狀態。現在最重要的不是再忍一下，而是先把問題說出來，讓有人能理解你的處境，陪你釐清下一步。",
+    formIntro:"請留下以下資料與你目前最想諮詢的問題，我們將依照你的狀況，協助你整理失智症照顧上的壓力來源與可行的支持方式。"
+  }
+];
+
+/* ---------- 狀態 ---------- */
+let current = 0;
+const answers = new Array(QUESTIONS.length).fill(null);
+
+const $ = id => document.getElementById(id);
+function show(id){
+  ["pageIntro","pageQuiz","pageResult","pageThanks"].forEach(p=>$(p).classList.add("hidden"));
+  $(id).classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function startQuiz(){ current = 0; renderQuestion(); show("pageQuiz"); }
+
+function renderQuestion(){
+  $("qText").textContent = QUESTIONS[current];
+  $("qCounter").textContent = `第 ${current+1} / ${QUESTIONS.length} 題`;
+  const pct = Math.round(current/QUESTIONS.length*100);
+  $("qPercent").textContent = pct + "%";
+  $("progressFill").style.width = pct + "%";
+  $("btnBack").style.visibility = current===0 ? "hidden" : "visible";
+
+  const box = $("qOptions");
+  box.innerHTML = "";
+  SCALE.forEach(s=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "opt" + (answers[current]===s.score ? " selected" : "");
+    b.innerHTML = `<span class="score">${s.score}</span><span>${s.label}</span>`;
+    b.onclick = ()=>{
+      answers[current] = s.score;
+      b.classList.add("selected");
+      setTimeout(()=>{
+        if(current < QUESTIONS.length-1){ current++; renderQuestion(); }
+        else{ showResult(); }
+      },200);
+    };
+    box.appendChild(b);
+  });
+}
+
+function prevQuestion(){ if(current>0){ current--; renderQuestion(); } }
+
+let currentLevel = null;
+function showResult(){
+  const total = answers.reduce((a,b)=>a+(b||0),0);
+  currentLevel = LEVELS.find(l=>total>=l.min && total<=l.max) || LEVELS[LEVELS.length-1];
+  const page = $("pageResult");
+  page.classList.remove("level-ok","level-warn","level-danger");
+  page.classList.add(currentLevel.cls);
+  $("scoreNum").textContent = total;
+  $("levelTag").textContent = "— " + currentLevel.tag + " —";
+  $("resultTitle").textContent = currentLevel.title;
+  $("resultDesc").textContent = currentLevel.desc;
+  $("formIntro").textContent = currentLevel.formIntro;
+  show("pageResult");
+}
+
+/* ---------- 「其他」時段顯示輸入框 ---------- */
+document.addEventListener("change",e=>{
+  if(e.target.name==="timeslot"){
+    $("otherText").classList.toggle("hidden", e.target.value!=="__other_option__");
+  }
+});
+
+/* ---------- 送出至 Google 表單 ---------- */
+function submitLead(){
+  const name = $("fName").value.trim();
+  const phone = $("fPhone").value.trim();
+  const slotEl = document.querySelector('input[name="timeslot"]:checked');
+  const question = $("fQuestion").value.trim();
+  const err = $("formError");
+
+  if(!name || !phone || !slotEl || !question ||
+     (slotEl.value==="__other_option__" && !$("otherText").value.trim())){
+    err.style.display = "block";
+    return;
+  }
+  err.style.display = "none";
+
+  const fd = new FormData();
+  fd.append(GOOGLE_FORM.entries.name, name);
+  fd.append(GOOGLE_FORM.entries.phone, phone);
+  if(slotEl.value==="__other_option__"){
+    fd.append(GOOGLE_FORM.entries.timeslot, "__other_option__");
+    fd.append(GOOGLE_FORM.entries.timeslot + ".other_option_response", $("otherText").value.trim());
+  }else{
+    fd.append(GOOGLE_FORM.entries.timeslot, slotEl.value);
+  }
+  fd.append(GOOGLE_FORM.entries.question, question);
+
+  const btn = $("btnSubmit");
+  btn.disabled = true;
+  btn.textContent = "送出中⋯";
+
+  fetch(GOOGLE_FORM.action, {method:"POST", mode:"no-cors", body:fd})
+    .catch(()=>{})            // no-cors 一律視為成功
+    .finally(()=>{
+      btn.disabled = false;
+      btn.textContent = "送出，安排專人與我聯繫";
+      show("pageThanks");
+    });
+}
+</script>
+</body>
+</html>
